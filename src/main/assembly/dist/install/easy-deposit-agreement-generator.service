@@ -1,0 +1,17 @@
+[Unit]
+Description=EASY Deposit Agreement Generator Service
+
+[Service]
+ExecStart=/bin/java \
+   -Dlogback.configurationFile=/etc/opt/dans.knaw.nl/easy-deposit-agreement-generator/logback-service.xml \
+   -Dapp.home=/opt/dans.knaw.nl/easy-deposit-agreement-generator \
+   -Dorg.scalatra.environment="production" \
+   -jar /opt/dans.knaw.nl/easy-deposit-agreement-generator/bin/easy-deposit-agreement-generator.jar run-service
+# Java returns 143 even if the SIGTERM was handled correctly.
+SuccessExitStatus=143
+
+User=easy-deposit-agreement-generator
+Group=easy-deposit-agreement-generator
+
+[Install]
+WantedBy=multi-user.target

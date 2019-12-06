@@ -7,4 +7,4 @@ Generate a deposit agreement document
 Welcome
 -------
 Welcome to te  `easy-deposit-agreement-generator` project, which is used to generate custom DANS deposit agreement documents. 
-Go to [the project website](dans-knaw.github.io/easy-deposit-agreement-generator) for more information.
+Go to [the project website](https://dans-knaw.github.io/easy-deposit-agreement-generator) for more information.

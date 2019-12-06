@@ -52,12 +52,8 @@ paths:
           description: OK
           content:
             'application/pdf': {}
-        400.1:
+        400:
           $ref: "#/components/responses/MalformedMetadata"
-        400.2:
-          $ref: "#/components/responses/MalformedDepositor"
-        400.3:
-          $ref: "#/components/responses/MalformedAgreementRequest"
         500:
           $ref: "#/components/responses/InternalServerError"
 
@@ -96,32 +92,32 @@ components:
           $ref: "#/components/schemas/IsPreview"
     Depositor:
       type: object
-        additionalProperties: false
-        required:
-          - name
-          - email
-          - organisation
-          - postalCode
-          - postalAddress
-          - city
-          - country
-        properties:
-          name:
-            type: string
-          organisation:
-            type: string
-          postalAddress:
-            type: string
-          postalCode:
-            type: string
-          city:
-            type: string
-          country:
-            type: string
-          telNo:
-            type: string
-          email:
-            type: string
+      additionalProperties: false
+      required:
+        - name
+        - email
+        - organisation
+        - postalCode
+        - postalAddress
+        - city
+        - country
+      properties:
+        name:
+          type: string
+        organisation:
+          type: string
+        postalAddress:
+          type: string
+        postalCode:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        telNo:
+          type: string
+        email:
+          type: string
     DatasetMetadata:
       type: object
       additionalProperties: false

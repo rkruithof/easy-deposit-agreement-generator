@@ -23,7 +23,7 @@
     <parent>
         <groupId>nl.knaw.dans.shared</groupId>
         <artifactId>dans-scala-app-project</artifactId>
-        <version>5.0.0</version>
+        <version>5.1.3</version>
     </parent>
 
     <groupId>nl.knaw.dans.easy</groupId>

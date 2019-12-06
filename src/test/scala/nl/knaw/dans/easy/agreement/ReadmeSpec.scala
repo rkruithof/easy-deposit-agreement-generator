@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream
 import better.files.File
 import org.scalatest._
 
+@Ignore
 class ReadmeSpec extends FlatSpec with Matchers with CustomMatchers {
 
   private val configuration = Configuration(

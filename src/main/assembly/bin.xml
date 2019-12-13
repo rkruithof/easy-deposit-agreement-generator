@@ -41,8 +41,6 @@
             <outputDirectory>bin</outputDirectory>
             <includes>
                 <include>easy-deposit-agreement-generator</include>
-                <include>easy-deposit-agreement-generator-service-start</include>
-                <include>easy-deposit-agreement-generator-initd.sh</include>
             </includes>
             <fileMode>0755</fileMode>
         </fileSet>

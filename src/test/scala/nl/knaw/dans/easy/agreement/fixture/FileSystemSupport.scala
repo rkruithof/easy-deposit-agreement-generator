@@ -13,12 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.easy
+package nl.knaw.dans.easy.agreement.fixture
 
-package object agreement {
+import better.files.File
+import better.files.File.currentWorkingDirectory
+import org.scalatest.BeforeAndAfterEach
+import org.scalatest.enablers.Existence
 
-  case class AgreementInputException(msg: String, cause: Throwable) extends Exception(s"input JSON could not be parsed correctly: $msg", cause)
-  case class PlaceholderException(msg: String, cause: Option[Throwable] = None) extends Exception(msg, cause.orNull)
-  case class InvalidLicenseException(msg: String) extends Exception(msg)
-  case class VelocityException(msg: String, cause: Throwable) extends Exception(msg, cause)
+trait FileSystemSupport extends BeforeAndAfterEach {
+  this: TestSupportFixture =>
+
+  implicit def existenceOfFile[FILE <: better.files.File]: Existence[FILE] = _.exists
+
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+
+    if (testDir.exists) testDir.delete()
+    testDir.createDirectories()
+  }
+
+  lazy val testDir: File = currentWorkingDirectory / "target" / "test" / getClass.getSimpleName
 }

@@ -21,8 +21,16 @@ import org.apache.commons.configuration.PropertiesConfiguration
 
 case class Configuration(version: String,
                          serverPort: Int,
-                         // other configuration properties defined in application.properties
-                        )
+                         private val templateResources: File,
+                        ) {
+
+  val templateDir: File = templateResources / "template"
+  val templateFilename: String = "Agreement.html"
+  val dansLogoFile: File = templateResources / "dans_logo.png"
+  val drivenByDataFile: File = templateResources / "DrivenByData.png"
+  val pdfRunScript: File = templateResources / "pdfgen.sh"
+  val licenses: Licenses = new Licenses(new PropertiesConfiguration((templateDir / "licenses" / "licenses.properties").toJava))
+}
 
 object Configuration {
 
@@ -40,7 +48,7 @@ object Configuration {
     new Configuration(
       version = (home / "bin" / "version").contentAsString.stripLineEnd,
       serverPort = properties.getInt("daemon.http.port"),
-      // read other properties defined in application.properties
+      templateResources = File(properties.getString("agreement.resources")),
     )
   }
 }

@@ -15,7 +15,9 @@
 # limitations under the License.
 #
 
-echo -n "Pre-creating log..."
-TEMPDIR=data
-touch $TEMPDIR/easy-deposit-agreement-generator.log
-echo "OK"
+HOMEDIR=home
+DATADIR=data
+
+touch $DATADIR/easy-deposit-agreement-generator.log
+cp src/test/resources/debug-config/pdfgen.sh $HOMEDIR/res/
+cp -r target/easy-licenses/licenses $HOMEDIR/res/template/licenses

@@ -13,12 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package nl.knaw.dans.easy
+package nl.knaw.dans.easy.agreement.fixture
 
-package object agreement {
+import org.scalatest.{ FlatSpec, Inside, Matchers }
 
-  case class AgreementInputException(msg: String, cause: Throwable) extends Exception(s"input JSON could not be parsed correctly: $msg", cause)
-  case class PlaceholderException(msg: String, cause: Option[Throwable] = None) extends Exception(msg, cause.orNull)
-  case class InvalidLicenseException(msg: String) extends Exception(msg)
-  case class VelocityException(msg: String, cause: Throwable) extends Exception(msg, cause)
-}
+trait TestSupportFixture extends FlatSpec
+  with Matchers
+  with Inside

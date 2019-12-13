@@ -15,14 +15,41 @@
  */
 package nl.knaw.dans.easy.agreement
 
+import nl.knaw.dans.lib.error._
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
+import nl.knaw.dans.lib.logging.servlet.{ LogResponseBodyOnError, PlainLogFormatter, ServletLogger }
 import org.scalatra._
 
 class EasyDepositAgreementGeneratorServlet(app: EasyDepositAgreementGeneratorApp,
-                         version: String) extends ScalatraServlet with DebugEnhancedLogging {
+                                           version: String)
+  extends ScalatraServlet
+    with ServletLogger
+    with PlainLogFormatter
+    with LogResponseBodyOnError
+    with DebugEnhancedLogging {
 
   get("/") {
     contentType = "text/plain"
     Ok(s"EASY Deposit Agreement Generator Service running ($version)")
+  }
+
+  post("/agreement") {
+    contentType = "application/pdf"
+
+    AgreementInput.fromJSON(request.body)
+      .flatMap(app.generateAgreement(_, response.outputStream))
+      .map(_ => Ok())
+      .doIfFailure {
+        case e =>
+          contentType = "text/plain"
+          logger.error(e.getMessage, e)
+      }
+      .getOrRecover {
+        case InvalidLicenseException(msg) => BadRequest(msg)
+        case e: AgreementInputException => BadRequest(e.getMessage)
+        case e: PlaceholderException => InternalServerError(e.getMessage)
+        case e: VelocityException => InternalServerError(e.getMessage)
+        case e => InternalServerError(e.getMessage)
+      }
   }
 }

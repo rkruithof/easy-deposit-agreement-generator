@@ -6,6 +6,8 @@ layout: home
 Manual
 ======
 
+Create a deposit agreement file for EASY deposits
+
 TABLE OF CONTENTS
 -----------------
 
@@ -19,7 +21,8 @@ TABLE OF CONTENTS
 SYNOPSIS
 --------
 
-    easy-deposit-agreement-generator [ -p ] -i <agreement-request-file> -o <agreement-file>
+    easy-deposit-agreement-generator generate [{--input|-i} <path>] [{--output|-o} <path>]
+    easy-deposit-agreement-generator run-service
 
 
 DESCRIPTION
@@ -40,15 +43,26 @@ requires to be installed before being used by `easy-deposit-agreement-generator`
 A `--preview` or `-p` flag can be added to the command line tool to signal that a 'preview agreement' needs to be created. This version of the agreement
 can be created when the deposit has net yet been submitted. Also in the title of the agreement it is clearly indicated that this version is a *preview*.
 
+
 ARGUMENTS
 ---------
 
-     -p, --preview   Indicates whether or not the agreement is a preview, default is false
-     -i, --input     The location of the JSON file containing the request
-     -o, --output    The location for resulting PDF containing the Deposit Agreement
-     -h, --help      Show help message
-     -v, --version   Show version of this program
+    Options:
     
+      -h, --help      Show help message
+      -v, --version   Show version of this program
+    
+    Subcommand: generate - Generate a deposit agreement
+      -i, --input  <arg>    The location of the JSON file containing the request
+      -o, --output  <arg>   The location for resulting PDF containing the Deposit
+                            Agreement
+      -h, --help            Show help message
+    ---
+    
+    Subcommand: run-service - Starts EASY Deposit Agreement Generator as a daemon that services HTTP requests
+      -h, --help   Show help message
+    ---
+
 
 INSTALLATION AND CONFIGURATION
 ------------------------------
@@ -65,9 +79,7 @@ in `src/main/assembly/dist/cfg/logback.xml`. The available settings are explaine
 
 **WeasyPrint** is installed according to the [installation page](http://weasyprint.readthedocs.io/en/latest/install.html) or via:
 
-```
-yum install redhat-rpm-config python-devel python-pip python-lxml cairo pango gdk-pixbuf2 libffi-devel weasyprint
-```
+    yum install redhat-rpm-config python-devel python-pip python-lxml cairo pango gdk-pixbuf2 libffi-devel weasyprint
 
 After this, `weasyprint --help` is supposed to show the appropriate help page.
 
@@ -82,6 +94,6 @@ Prerequisites:
 
 Steps:
 
-        git clone https://github.com/DANS-KNAW/easy-deposit-agreement-generator.git
-        cd easy-deposit-agreement-generator
-        mvn install
+    git clone https://github.com/DANS-KNAW/easy-deposit-agreement-generator.git
+    cd easy-deposit-agreement-generator
+    mvn install

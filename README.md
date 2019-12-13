@@ -2,7 +2,7 @@ easy-deposit-agreement-generator
 ================================
 [![Build Status](https://travis-ci.org/DANS-KNAW/easy-deposit-agreement-generator.png?branch=master)](https://travis-ci.org/DANS-KNAW/easy-deposit-agreement-generator)
 
-Generate a deposit agreement document
+Create a deposit agreement file for EASY deposits
 
 Welcome
 -------

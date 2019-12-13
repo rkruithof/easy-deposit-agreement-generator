@@ -37,6 +37,7 @@
 
     <properties>
         <main-class>nl.knaw.dans.easy.agreement.Command</main-class>
+        <easy-licenses.version>1.0.5</easy-licenses.version>
     </properties>
 
     <scm>
@@ -71,12 +72,27 @@
         <dependency>
             <groupId>nl.knaw.dans.lib</groupId>
             <artifactId>dans-scala-lib_2.12</artifactId>
+            <version>1.6.1</version>
         </dependency>
 
         <!-- Apache Commons -->
         <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
             <groupId>commons-configuration</groupId>
             <artifactId>commons-configuration</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>1.7</version>
         </dependency>
 
         <!-- service -->
@@ -96,6 +112,16 @@
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>3.1.0</version>
+        </dependency>
+
+        <!-- json -->
+        <dependency>
+            <groupId>org.json4s</groupId>
+            <artifactId>json4s-native_2.12</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.json4s</groupId>
+            <artifactId>json4s-ext_2.12</artifactId>
         </dependency>
 
         <!-- logging -->
@@ -128,6 +154,33 @@
         </repository>
     </repositories>
 
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>resources</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>nl.knaw.dans.easy</groupId>
+                                    <artifactId>easy-licenses</artifactId>
+                                    <version>${easy-licenses.version}</version>
+                                    <outputDirectory>${project.build.directory}/easy-licenses</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
     <profiles>
         <profile>
             <id>rpm</id>
@@ -150,6 +203,39 @@
                                 </goals>
                             </execution>
                         </executions>
+                        <configuration>
+                            <group>Applications/Archiving</group>
+                            <requires combine.children="append">
+                                <require>redhat-rpm-config</require>
+                                <require>python-devel</require>
+                                <require>python-pip</require>
+                                <require>python-lxml</require>
+                                <require>cairo</require>
+                                <require>pango</require>
+                                <require>gdk-pixbuf2</require>
+                                <require>libffi-devel</require>
+                                <require>weasyprint</require>
+                            </requires>
+                            <mappings combine.children="append">
+                                <mapping>
+                                    <directory>/opt/${dans-provider-name}/${project.artifactId}/res</directory>
+                                    <sources>
+                                        <source>
+                                            <location>src/main/assembly/dist/res</location>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                                <mapping>
+                                    <directory>/opt/${dans-provider-name}/${project.artifactId}/res/template/licenses</directory>
+                                    <configuration>${rpm-replace-configuration}</configuration>
+                                    <sources>
+                                        <source>
+                                            <location>target/easy-licenses/licenses</location>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                            </mappings>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>

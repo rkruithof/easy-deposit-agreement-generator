@@ -15,7 +15,10 @@
  */
 package nl.knaw.dans.easy.agreement
 
-import org.rogach.scallop.{ScallopConf, ScallopOption, Subcommand, singleArgConverter}
+import java.nio.file.Path
+
+import better.files.File
+import org.rogach.scallop.{ ScallopConf, ScallopOption, Subcommand }
 
 class CommandLineOptions(args: Array[String], configuration: Configuration) extends ScallopConf(args) {
   appendDefaultToDescription = true
@@ -26,8 +29,8 @@ class CommandLineOptions(args: Array[String], configuration: Configuration) exte
   val description: String = s"""Create a deposit agreement file for EASY deposits"""
   val synopsis: String =
     s"""
-       |  $printedName (synopsis of command line parameters)
-       |  $printedName (... possibly multiple lines for subcommands)""".stripMargin
+       |  $printedName generate [{--input|-i} <path>] [{--output|-o} <path>]
+       |  $printedName run-service""".stripMargin
 
   version(s"$printedName v${ configuration.version }")
   banner(
@@ -40,11 +43,24 @@ class CommandLineOptions(args: Array[String], configuration: Configuration) exte
        |
        |Options:
        |""".stripMargin)
-  //val url = opt[String]("someOption", noshort = true, descr = "Description of the option", default = app.someProperty)
+
+  val generate = new Subcommand("generate") {
+    descr("Generate a deposit agreement")
+    private val inputPath: ScallopOption[Path] = opt(name = "input", short = 'i',
+      descr = "The location of the JSON file containing the request")
+    val inputFile: ScallopOption[File] = inputPath.map(File(_))
+    private val outputPath: ScallopOption[Path] = opt(name = "output", short = 'o',
+      descr = "The location for resulting PDF containing the Deposit Agreement")
+    val outputFile: ScallopOption[File] = outputPath.map(File(_))
+
+    validatePathExists(inputPath)
+
+    footer(SUBCOMMAND_SEPARATOR)
+  }
+  addSubcommand(generate)
 
   val runService = new Subcommand("run-service") {
-    descr(
-      "Starts EASY Deposit Agreement Generator as a daemon that services HTTP requests")
+    descr("Starts EASY Deposit Agreement Generator as a daemon that services HTTP requests")
     footer(SUBCOMMAND_SEPARATOR)
   }
   addSubcommand(runService)

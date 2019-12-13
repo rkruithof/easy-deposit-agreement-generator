@@ -18,10 +18,11 @@ package nl.knaw.dans.easy.agreement
 import better.files.File
 import nl.knaw.dans.lib.error._
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
+import resource.managed
 
 import scala.language.reflectiveCalls
 import scala.util.control.NonFatal
-import scala.util.{ Failure, Try }
+import scala.util.{ Failure, Success, Try }
 
 object Command extends App with DebugEnhancedLogging {
   type FeedBackMessage = String
@@ -33,18 +34,37 @@ object Command extends App with DebugEnhancedLogging {
   val app = new EasyDepositAgreementGeneratorApp(configuration)
 
   runSubcommand(app)
-    .doIfSuccess(msg => println(s"OK: $msg"))
+    .doIfSuccess(msg => Console.err.println(s"OK: $msg"))
     .doIfFailure { case e => logger.error(e.getMessage, e) }
-    .doIfFailure { case NonFatal(e) => println(s"FAILED: ${ e.getMessage }") }
+    .doIfFailure { case NonFatal(e) => Console.err.println(s"FAILED: ${ e.getMessage }") }
 
   private def runSubcommand(app: EasyDepositAgreementGeneratorApp): Try[FeedBackMessage] = {
     commandLine.subcommand
       .collect {
-//      case subcommand1 @ subcommand.subcommand1 => // handle subcommand1
-//      case None => // handle command line without subcommands
-        case commandLine.runService => runAsService(app)
+        case commandLine.runService =>
+          runAsService(app)
+        case generate @ commandLine.generate =>
+          runGenerate(generate.inputFile.toOption, generate.outputFile.toOption)(app)
+        case _ =>
+          Failure(new IllegalArgumentException(s"Unknown command: ${ commandLine.subcommand }"))
       }
-      .getOrElse(Failure(new IllegalArgumentException(s"Unknown command: ${ commandLine.subcommand }")))
+      .getOrElse(Success(s"Missing subcommand. Please refer to '${ commandLine.printedName } --help'."))
+  }
+
+  private def runGenerate(inputFile: Option[File], outputFile: Option[File])
+                         (app: EasyDepositAgreementGeneratorApp): Try[FeedBackMessage] = {
+    outputFile
+      .map(file => managed(file.createFileIfNotExists().newOutputStream))
+      .getOrElse(managed(Console.out))
+      .map(os =>
+        inputFile
+          .map(_.fileReader.apply(AgreementInput.fromJSON))
+          .getOrElse { Success(new Interact(configuration.licenses).interactiveAgreementInput) }
+          .flatMap(app.generateAgreement(_, os))
+          .map(_ => "Successfully generated deposit agreement")
+      )
+      .tried
+      .flatten
   }
 
   private def runAsService(app: EasyDepositAgreementGeneratorApp): Try[FeedBackMessage] = Try {

@@ -15,10 +15,33 @@
  */
 package nl.knaw.dans.easy.agreement
 
-import scala.util.{ Success, Try }
+import java.io.{ ByteArrayInputStream, ByteArrayOutputStream, OutputStream }
 
-class EasyDepositAgreementGeneratorApp(configuration: Configuration)  {
+import nl.knaw.dans.easy.agreement.pdfgen._
+import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 
+import scala.sys.process.ProcessLogger
+import scala.util.Try
 
+class EasyDepositAgreementGeneratorApp(configuration: Configuration) extends DebugEnhancedLogging {
 
+  private val placeholders: Placeholders = new V4AgreementPlaceholders(configuration.dansLogoFile, configuration.drivenByDataFile, configuration.licenses)
+  private val templateResolver: TemplateResolver = new VelocityTemplateResolver(configuration.templateDir, configuration.templateFilename)
+  private val pdfGenerator: PdfGenerator = new WeasyPrintPdfGenerator(configuration.pdfRunScript)
+  private val processLogger: ProcessLogger = ProcessLogger(s => logger.info(s), e => logger.error(e))
+
+  def generateAgreement(input: AgreementInput, pdfOutputStream: => OutputStream): Try[Unit] = {
+    trace(input)
+    resource.managed(new ByteArrayOutputStream())
+      .map(templateOS => {
+        for {
+          placeholderMap <- placeholders.inputToPlaceholderMap(input)
+          _ <- templateResolver.createTemplate(templateOS, placeholderMap)
+          pdfInput = new ByteArrayInputStream(templateOS.toByteArray)
+          _ = pdfGenerator.createPdf(pdfInput, pdfOutputStream) ! processLogger
+        } yield ()
+      })
+      .tried
+      .flatten
+  }
 }

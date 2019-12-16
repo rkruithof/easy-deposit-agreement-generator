@@ -39,6 +39,8 @@ paths:
           description: Service is unavailable because of an error.
   /agreement:
     post:
+      tags:
+        - agreement
       summary: Returns a Deposit Agreement based on the provided JSON
       requestBody:
         description: JSON document containing the agreement request

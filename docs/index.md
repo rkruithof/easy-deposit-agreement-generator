@@ -6,17 +6,7 @@ layout: home
 Manual
 ======
 
-Create a deposit agreement file for EASY deposits
-
-TABLE OF CONTENTS
------------------
-
-- [SYNOPSIS](#synopsis)
-- [DESCRIPTION](#description)
-- [ARGUMENTS](#arguments)
-- [INSTALLATION AND CONFIGURATION](#installation-and-configuration)
-- [BUILDING FROM SOURCE](#building-from-source)
-
+Create a deposit agreement file for EASY deposits.
 
 SYNOPSIS
 --------

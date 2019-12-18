@@ -19,6 +19,7 @@ import java.io.{ File => JFile }
 
 import better.files.File
 import nl.knaw.dans.easy.agreement._
+import nl.knaw.dans.easy.agreement.pdfgen.Placeholders.encodeImage
 import nl.knaw.dans.lib.error._
 import nl.knaw.dans.lib.logging.DebugEnhancedLogging
 import org.apache.commons.codec.binary.Base64
@@ -76,12 +77,6 @@ class V4AgreementPlaceholders(dansLogoFile: File, drivenByDataFile: File, licens
     )
   }
 
-  def encodeImage(keyword: KeywordMapping, file: File): Try[(KeywordMapping, String)] = Try {
-    keyword -> new String(Base64.encodeBase64(FileUtils.readFileToByteArray(file.toJava)))
-  } recoverWith {
-    case e => Failure(PlaceholderException(e.getMessage, Option(e)))
-  }
-
   def depositor(depositor: Depositor): PlaceholderMap = {
     Map(
       DepositorName -> depositor.name,
@@ -122,5 +117,13 @@ class V4AgreementPlaceholders(dansLogoFile: File, drivenByDataFile: File, licens
       TermsLicense -> new JFile(file).getName.replaceAll(extensionRegExp, ""),
       Appendix3 -> file.toString.replaceAll(extensionRegExp, ".txt"),
     )
+  }
+}
+object Placeholders {
+
+  def encodeImage(keyword: KeywordMapping, file: File): Try[(KeywordMapping, String)] = Try {
+    keyword -> new String(Base64.encodeBase64(FileUtils.readFileToByteArray(file.toJava)))
+  } recoverWith {
+    case e => Failure(PlaceholderException(e.getMessage, Option(e)))
   }
 }

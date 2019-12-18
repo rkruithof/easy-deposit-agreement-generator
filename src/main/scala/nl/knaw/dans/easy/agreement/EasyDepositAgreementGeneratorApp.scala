@@ -30,16 +30,24 @@ class EasyDepositAgreementGeneratorApp(configuration: Configuration) extends Deb
   private val pdfGenerator: PdfGenerator = new WeasyPrintPdfGenerator(configuration.pdfRunScript)
   private val processLogger: ProcessLogger = ProcessLogger(s => logger.info(s), e => logger.error(e))
 
-  def generateAgreement(input: AgreementInput, pdfOutputStream: => OutputStream): Try[Unit] = {
+  def generateAgreement(input: AgreementInput, docOutputStream: => OutputStream, contentType: String = "application/pdf"): Try[Unit] = {
     trace(input)
     resource.managed(new ByteArrayOutputStream())
       .map(templateOS => {
-        for {
-          placeholderMap <- placeholders.inputToPlaceholderMap(input)
-          _ <- templateResolver.createTemplate(templateOS, placeholderMap)
-          pdfInput = new ByteArrayInputStream(templateOS.toByteArray)
-          _ = pdfGenerator.createPdf(pdfInput, pdfOutputStream) ! processLogger
-        } yield ()
+        if (contentType.contains("/html"))
+          for {
+            placeholderMap <- placeholders.inputToPlaceholderMap(input)
+            _ = logger.info(s"generating HTML: $contentType")
+            _ <- templateResolver.createTemplate(docOutputStream, placeholderMap)
+          } yield ()
+        else
+          for {
+            placeholderMap <- placeholders.inputToPlaceholderMap(input)
+            _ <- templateResolver.createTemplate(templateOS, placeholderMap)
+            _ = logger.info(s"generating PDF: $contentType")
+            pdfInput = new ByteArrayInputStream(templateOS.toByteArray)
+            _ = pdfGenerator.createPdf(pdfInput, docOutputStream) ! processLogger
+          } yield ()
       })
       .tried
       .flatten

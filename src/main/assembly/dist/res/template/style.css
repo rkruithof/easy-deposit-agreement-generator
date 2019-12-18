@@ -38,7 +38,13 @@ footer {
     background-position: 96% 100%;
 }
 @media screen {
+    body, footer {
+        max-width: 500px;
+    }
     body {
+        margin-top: 100px; /* accommodate the logo */
+        background: #FFF url(data:image/jpg;base64,$DansLogo) no-repeat 0 0;
+        background-size: 262px 100px;
         margin-bottom: 9em;
     }
     footer {

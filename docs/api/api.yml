@@ -54,6 +54,7 @@ paths:
           description: OK
           content:
             'application/pdf': {}
+            'application/html': {}
         500:
           $ref: "#/components/responses/InternalServerError"
 

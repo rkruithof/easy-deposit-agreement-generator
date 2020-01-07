@@ -49,7 +49,7 @@ class LicensesSpec extends TestSupportFixture {
   }
 
   it should "return true if the URL is listed as 'http', but the input uses 'https'" in {
-    licenses.isValidLicense("https://dans.knaw.nl/en/about/organisation-and-policy/legal-information/dans-licence.pdf") shouldBe true
+    licenses.isValidLicense("http://dans.knaw.nl/en/about/organisation-and-policy/legal-information/DANSLicence.pdf") shouldBe true
   }
 
   it should "return false if the URL does not occur in the listing" in {

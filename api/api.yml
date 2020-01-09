@@ -1,0 +1,149 @@
+openapi: 3.0.1
+
+servers:
+  - description: Debug environment
+    url: http://localhost:20210/
+  - description: Local Vagrant machine
+    url: http://test.dans.knaw.nl
+info:
+  description: Private interface for generating Deposit Agreements for depositing datasets to EASY
+  version: 1.0.0
+  title: Deposit Agreement Generator API
+  contact:
+    email: info@dans.knaw.nl
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+tags:
+  - name: service
+    description: Information about service status
+  - name: agreement
+    description: Generate a Deposit Agreement
+paths:
+  /:
+    get:
+      tags:
+        - service
+      summary: Returns a description of the service.
+      responses:
+        200:
+          description: description of the service
+          content:
+            text/plain:
+              schema:
+                type: string
+                description: a plain text, human readable description of the service
+                example: |
+                  EASY Deposit Agreement Generator Service running (v1.0.0)
+        500:
+          description: Service is unavailable because of an error.
+  /agreement:
+    post:
+      tags:
+        - agreement
+      summary: Returns a Deposit Agreement based on the provided JSON
+      requestBody:
+        description: JSON document containing the agreement request
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgreementRequest'
+      responses:
+        200:
+          description: OK
+          content:
+            'application/pdf': {}
+            'application/html': {}
+        500:
+          $ref: "#/components/responses/InternalServerError"
+
+components:
+  responses:
+    InternalServerError:
+      description: Internal Server Error.
+
+  schemas:
+    AgreementRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - depositor
+        - doi
+        - title
+        - dateSubmitted
+        - dateAvailable
+        - accessCategory
+        - license
+        - sample
+        - agreementVersion
+        - agreementLanguage
+      properties:
+        depositor:
+          $ref: "#/components/schemas/Depositor"
+        doi:
+          type: string
+        title:
+          type: string
+        dateSubmitted:
+          type: string
+          format: date
+        dateAvailable:
+          type: string
+          format: date
+        accessCategory:
+          type: string
+          enum:
+            - ANONYMOUS_ACCESS
+            - OPEN_ACCESS_FOR_REGISTERED_USERS
+            - GROUP_ACCESS
+            - REQUEST_PERMISSION
+            - ACCESS_ELSEWHERE
+            - NO_ACCESS
+            - FREELY_AVAILABLE
+            - OPEN_ACCESS
+        license:
+          type: string
+        sample:
+          type: boolean
+          description: Whether the resulting Agreement is a sample (true), or a final Agreement (false)
+        agreementVersion:
+          type: string
+          description: The agreement version to be used
+          enum:
+            - "4.0"
+        agreementLanguage:
+          type: string
+          description: The language of the agreement to be used
+          enum:
+            - EN
+            - NL
+    Depositor:
+      type: object
+      additionalProperties: false
+      required:
+        - name
+        - address
+        - zipcode
+        - city
+        - country
+        - organisation
+        - phone
+        - email
+      properties:
+        name:
+          type: string
+        address:
+          type: string
+        zipcode:
+          type: string
+        city:
+          type: string
+        country:
+          type: string
+        organisation:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string

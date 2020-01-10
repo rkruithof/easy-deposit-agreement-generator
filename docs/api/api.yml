@@ -57,12 +57,7 @@ paths:
         400:
           description: The input JSON could not be parsed correctly.
         500:
-          $ref: "#/components/responses/InternalServerError"
-
-components:
-  responses:
-    InternalServerError:
-      description: Internal Server Error.
+          description: Internal Server Error.
 
   schemas:
     AgreementRequest:

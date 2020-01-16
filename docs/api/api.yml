@@ -102,7 +102,7 @@ components:
         license:
           type: string
           format: url
-          description: The license to be used. A list of valid license URLs can be found at https://github.com/DANS-KNAW/easy-licenses/tree/master/src/main/resources/licenses/licenses.properties.
+          description: The license to be used. A list of valid license URLs can be found at https://github.com/DANS-KNAW/easy-licenses/tree/master/src/main/resources/licenses/licenses.properties
         sample:
           type: boolean
           description: Whether the resulting Agreement is a sample (true), or a final Agreement (false)
